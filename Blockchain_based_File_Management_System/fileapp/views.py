@@ -167,16 +167,16 @@ def file_list(request):
     files = FileUpload.objects.filter(user=request.user)  # Show only user's files
     return render(request, 'fileapp/file_list.html', {'files': files})
 
+@login_required
 def search_file(request):
     query = request.GET.get('q', '')
-    files = []  # Empty list by default
+    files = []
 
-    # Only retrieve files if a search query is provided
     if query:
-        # Search by file hash or file name
         files = FileUpload.objects.filter(
             Q(file_hash__icontains=query) |
-            Q(file__icontains=query)
+            Q(file__icontains=query),
+            user=request.user  # Ensure only current user's files are shown
         )
 
     return render(request, 'fileapp/search.html', {'files': files, 'query': query})
