@@ -147,16 +147,21 @@ def file_detail(request, file_id):
 
     return render(request, 'fileapp/file_detail.html', context)
 
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+
 def signup(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # Auto-login after signup
-            return redirect("file_list")
+            return redirect("signup_confirmation")  # Redirect to confirmation page
     else:
         form = UserCreationForm()
     return render(request, "fileapp/signup.html", {"form": form})
+
 
 @login_required(login_url='login')  # Users must be logged in to see home
 def home(request):
@@ -200,3 +205,6 @@ def login_view(request):
             return render(request, 'fileapp/login.html', {'error': 'Invalid credentials'})
 
     return render(request, 'fileapp/login.html')
+
+def signup_confirmation(request):
+    return render(request, 'signup_confirmation.html')
